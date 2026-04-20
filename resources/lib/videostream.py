@@ -422,20 +422,19 @@ class VideoStream(Object):
         """ cache a subtitle from the given url and rename it for kodi to label it correctly """
 
         try:
-            # api request streams
             subtitles_req = G.api.make_request(
                 method="GET",
                 url=subtitle_url
             )
         except Exception:
             log_error_with_trace("error in requesting subtitle data from api")
-            raise CrunchyrollError(
+            return False
+
+        if not subtitles_req or not subtitles_req.get('data', None):
+            crunchy_log(
                 "Failed to download subtitle for language %s from url %s" % (subtitle_language, subtitle_url)
             )
-
-        if not subtitles_req.get('data', None):
-            # error
-            raise CrunchyrollError("Returned data is not text")
+            return False
 
         cache_target = xbmcvfs.translatePath(self.get_cache_path() + G.args.get_arg('stream_id') + '/')
         xbmcvfs.mkdirs(cache_target)

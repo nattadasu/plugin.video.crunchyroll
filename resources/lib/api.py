@@ -1092,7 +1092,7 @@ def get_json_from_response(r: Response) -> Optional[Dict]:
     from .model import CrunchyrollError
 
     code: int = r.status_code
-    response_type: str = r.headers.get("Content-Type")
+    response_type: str = r.headers.get("Content-Type", "")
 
     # no content - possibly POST/DELETE request?
     if not r or not r.text:
@@ -1103,8 +1103,17 @@ def get_json_from_response(r: Response) -> Optional[Dict]:
             # r.text is empty when status code cause raise
             r = e.response
 
-    # handle text/plain response (e.g. fetch subtitle)
-    if response_type == "text/plain":
+    # handle subtitle response (e.g. fetch subtitle)
+    # Subtitles can be text/plain, application/octet-stream, or others depending on CDN
+    # We check content-type OR look for common subtitle headers in the text
+    is_subtitle = "text/plain" in response_type or "application/octet-stream" in response_type
+    if not is_subtitle:
+        # check for ASS or VTT headers
+        content_start = r.text[:100]
+        if "[Script Info]" in content_start or "WEBVTT" in content_start:
+            is_subtitle = True
+
+    if is_subtitle:
         # if encoding is not provided in the response, Requests will make an educated guess and very likely fail
         # messing encoding up - which did cost me hours. We will always receive utf-8 from crunchy, so enforce that
         r.encoding = "utf-8"
@@ -1114,12 +1123,17 @@ def get_json_from_response(r: Response) -> Optional[Dict]:
         })
         return d
 
-    if not r.ok and r.text[0] != "{":
+    if not r.ok and (not r.text or r.text[0] != "{"):
         raise CrunchyrollError(f"[{code}] {r.text}")
 
     try:
         r_json: Dict = r.json()
-    except requests.exceptions.JSONDecodeError:
+    except (requests.exceptions.JSONDecodeError, ValueError):
+        # If it's not JSON, but we are here, it might be a subtitle file we missed
+        if "[Script Info]" in r.text or "WEBVTT" in r.text:
+            r.encoding = "utf-8"
+            return {"data": r.text}
+
         log_error_with_trace("Failed to parse response data")
         return None
 
