@@ -44,7 +44,7 @@ class CloudflareProxy:
     Auto-terminates after TTL to prevent zombie processes
     """
 
-    def __init__(self, ttl_seconds=30):
+    def __init__(self, ttl_seconds=180):
         self.server = None
         self.server_thread = None
         self.port = None

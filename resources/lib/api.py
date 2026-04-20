@@ -1103,17 +1103,23 @@ def get_json_from_response(r: Response) -> Optional[Dict]:
             # r.text is empty when status code cause raise
             r = e.response
 
-    # handle subtitle response (e.g. fetch subtitle)
+    # handle subtitle or manifest response (e.g. fetch subtitle, DASH/HLS manifest)
     # Subtitles can be text/plain, application/octet-stream, or others depending on CDN
-    # We check content-type OR look for common subtitle headers in the text
-    is_subtitle = "text/plain" in response_type or "application/octet-stream" in response_type
-    if not is_subtitle:
-        # check for ASS or VTT headers
+    # Manifests are application/dash+xml or application/vnd.apple.mpegurl
+    # We check content-type OR look for common headers in the text
+    is_data_response = (
+        "text/plain" in response_type or 
+        "application/octet-stream" in response_type or
+        "application/dash+xml" in response_type or
+        "application/vnd.apple.mpegurl" in response_type
+    )
+    if not is_data_response:
+        # check for ASS, VTT, MPD or HLS headers
         content_start = r.text[:100]
-        if "[Script Info]" in content_start or "WEBVTT" in content_start:
-            is_subtitle = True
+        if any(h in content_start for h in ["[Script Info]", "WEBVTT", "<MPD", "#EXTM3U"]):
+            is_data_response = True
 
-    if is_subtitle:
+    if is_data_response:
         # if encoding is not provided in the response, Requests will make an educated guess and very likely fail
         # messing encoding up - which did cost me hours. We will always receive utf-8 from crunchy, so enforce that
         r.encoding = "utf-8"
@@ -1129,8 +1135,8 @@ def get_json_from_response(r: Response) -> Optional[Dict]:
     try:
         r_json: Dict = r.json()
     except (requests.exceptions.JSONDecodeError, ValueError):
-        # If it's not JSON, but we are here, it might be a subtitle file we missed
-        if "[Script Info]" in r.text or "WEBVTT" in r.text:
+        # If it's not JSON, but we are here, it might be a subtitle or manifest file we missed
+        if any(h in r.text for h in ["[Script Info]", "WEBVTT", "<MPD", "#EXTM3U"]):
             r.encoding = "utf-8"
             return {"data": r.text}
 
