@@ -391,7 +391,7 @@ class VideoStream(Object):
 
         return url
 
-    def _get_subtitles_from_api_data(self, api_stream_data) -> Union[str, None]:
+    def _get_subtitles_from_api_data(self, api_stream_data) -> Union[list[str], None]:
         """ retrieve appropriate subtitle urls from api data, using local caching and renaming """
 
         # we only need those urls if soft-subs are enabled in addon settings
@@ -400,12 +400,28 @@ class VideoStream(Object):
 
         subtitles_data_raw = []
         subtitles_url_cached = []
+        processed_languages = set()
 
+        # 1. Add preferred language first
         if G.args.subtitle in api_stream_data["subtitles"]:
             subtitles_data_raw.append(api_stream_data.get("subtitles").get(G.args.subtitle))
+            processed_languages.add(G.args.subtitle)
 
+        # 2. Add fallback language second
         if G.args.subtitle_fallback and G.args.subtitle_fallback in api_stream_data["subtitles"]:
-            subtitles_data_raw.append(api_stream_data.get("subtitles").get(G.args.subtitle_fallback))
+            if G.args.subtitle_fallback not in processed_languages:
+                subtitles_data_raw.append(api_stream_data.get("subtitles").get(G.args.subtitle_fallback))
+                processed_languages.add(G.args.subtitle_fallback)
+
+        # 3. Add all other available languages (sorted by BCP 47 code)
+        other_langs = sorted([
+            (code, data) for code, data in api_stream_data["subtitles"].items()
+            if code not in processed_languages
+        ])
+
+        for lang_code, sub_data in other_langs:
+            subtitles_data_raw.append(sub_data)
+            processed_languages.add(lang_code)
 
         if not subtitles_data_raw:
             return None
@@ -421,7 +437,7 @@ class VideoStream(Object):
             if cache_result is not None:
                 subtitles_url_cached.append(cache_result)
 
-        return subtitles_url_cached if subtitles_url_cached is not None else None
+        return subtitles_url_cached if subtitles_url_cached else None
 
     def _cache_subtitle(self, subtitle_url: str, subtitle_language: str, subtitle_format: str) -> bool:
         """ cache a subtitle from the given url and rename it for kodi to label it correctly """
