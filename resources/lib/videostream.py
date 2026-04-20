@@ -462,8 +462,14 @@ class VideoStream(Object):
 
         cache_file = self.get_cache_file_name(subtitle_language, subtitle_format)
 
+        data = subtitles_req.get('data')
+        # QoL: Convert soft line breaks (\n) to hard line breaks (\N) for better rendering in Kodi
+        # and remove any trailing line breaks that cause empty lines
+        if data:
+            data = data.replace('\\n', '\\N').replace('\\N\r\n', '\r\n').replace('\\N\n', '\n')
+
         with open(cache_target + cache_file, 'w', encoding='utf-8') as file:
-            result = file.write(subtitles_req.get('data'))
+            result = file.write(data)
 
         return True if result > 0 else False
 
