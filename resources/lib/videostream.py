@@ -268,7 +268,7 @@ class VideoStream(Object):
             raise CrunchyrollError("Failed to fetch stream data from api")
 
         video_player_stream_data.stream_url = self._get_stream_url_from_api_data_v2(async_data.get('stream_data'))
-        video_player_stream_data.subtitle_urls = self._get_subtitles_from_api_data(async_data.get('stream_data'))
+        video_player_stream_data.subtitle_urls = async_data.get('subtitle_urls')
         video_player_stream_data.token = async_data.get('stream_data').get('token')
 
         video_player_stream_data.skip_events_data = async_data.get('skip_events_data')
@@ -294,15 +294,20 @@ class VideoStream(Object):
         # start async requests and fetch results
         results = await asyncio.gather(t_stream_data, t_skip_events_data, t_playheads, t_item_data)
 
+        stream_data = results[0] or {}
+        # Fetch subtitles in parallel now that we have stream_data
+        subtitle_urls = await asyncio.to_thread(self._get_subtitles_from_api_data, stream_data)
+
         playable_item = get_listables_from_response([results[3].get(G.args.get_arg('episode_id'))]) if \
             results[3] else None
 
         return {
-            'stream_data': results[0] or {},
+            'stream_data': stream_data,
             'skip_events_data': results[1] or {},
             'playheads_data': results[2] or {},
             'playable_item': playable_item[0] if playable_item else None,
-            'playable_item_parent': None
+            'playable_item_parent': None,
+            'subtitle_urls': subtitle_urls
             # get_listables_from_response([results[4]])[0] if results[4] else None
         }
 
