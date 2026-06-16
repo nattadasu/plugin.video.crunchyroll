@@ -1,4 +1,4 @@
-﻿# Arquivo de linguagem do Kodi Media Center
+# Arquivo de linguagem do Kodi Media Center
 msgid ""
 msgstr ""
 "Project-Id-Version: Kodi Addons\n"
@@ -436,4 +436,13 @@ msgstr "Cancelar"
 msgctxt "#30313"
 msgid "- OR SCAN QR CODE -"
 msgstr "- OU DIGITALIZAR QR CODE -"
+
+
+msgctxt "#30314"
+msgid "Fill subtitle gaps"
+msgstr "Preencher espaços nas legendas"
+
+msgctxt "#30315"
+msgid "Fills distracting gaps between subtitle lines (0-6 frames) to improve readability"
+msgstr "Preenche espaços irritantes entre linhas de legenda (0-6 quadros) para melhorar a legibilidade"
 

@@ -35,6 +35,7 @@ from resources.lib.globals import G
 from resources.lib.model import Object, CrunchyrollError, PlayableItem
 from resources.lib.utils import log_error_with_trace, crunchy_log, \
     get_playheads_from_api, get_cms_object_data_by_ids, get_listables_from_response
+from resources.lib.gap_filler import ASSGapFiller
 from ..modules import cloudscraper
 
 class CloudflareProxy:
@@ -268,7 +269,7 @@ class VideoStream(Object):
             raise CrunchyrollError("Failed to fetch stream data from api")
 
         video_player_stream_data.stream_url = self._get_stream_url_from_api_data_v2(async_data.get('stream_data'))
-        video_player_stream_data.subtitle_urls = self._get_subtitles_from_api_data(async_data.get('stream_data'))
+        video_player_stream_data.subtitle_urls = async_data.get('subtitle_urls')
         video_player_stream_data.token = async_data.get('stream_data').get('token')
 
         video_player_stream_data.skip_events_data = async_data.get('skip_events_data')
@@ -297,13 +298,17 @@ class VideoStream(Object):
         playable_item = get_listables_from_response([results[3].get(G.args.get_arg('episode_id'))]) if \
             results[3] else None
 
+        stream_data = results[0] or {}
+        # Fetch subtitles in parallel now that we have stream_data
+        subtitle_urls = await asyncio.to_thread(self._get_subtitles_from_api_data, stream_data)
+
         return {
-            'stream_data': results[0] or {},
+            'stream_data': stream_data,
             'skip_events_data': results[1] or {},
             'playheads_data': results[2] or {},
             'playable_item': playable_item[0] if playable_item else None,
-            'playable_item_parent': None
-            # get_listables_from_response([results[4]])[0] if results[4] else None
+            'playable_item_parent': None,
+            'subtitle_urls': subtitle_urls
         }
 
     @staticmethod
@@ -386,7 +391,7 @@ class VideoStream(Object):
 
         return url
 
-    def _get_subtitles_from_api_data(self, api_stream_data) -> Union[str, None]:
+    def _get_subtitles_from_api_data(self, api_stream_data) -> Union[list[str], None]:
         """ retrieve appropriate subtitle urls from api data, using local caching and renaming """
 
         # we only need those urls if soft-subs are enabled in addon settings
@@ -396,11 +401,28 @@ class VideoStream(Object):
         subtitles_data_raw = []
         subtitles_url_cached = []
 
+        processed_languages = set()
+
+        # 1. Add preferred language first
         if G.args.subtitle in api_stream_data["subtitles"]:
             subtitles_data_raw.append(api_stream_data.get("subtitles").get(G.args.subtitle))
+            processed_languages.add(G.args.subtitle)
 
+        # 2. Add fallback language second
         if G.args.subtitle_fallback and G.args.subtitle_fallback in api_stream_data["subtitles"]:
-            subtitles_data_raw.append(api_stream_data.get("subtitles").get(G.args.subtitle_fallback))
+            if G.args.subtitle_fallback not in processed_languages:
+                subtitles_data_raw.append(api_stream_data.get("subtitles").get(G.args.subtitle_fallback))
+                processed_languages.add(G.args.subtitle_fallback)
+
+        # 3. Add all other available languages (sorted by BCP 47 code)
+        other_langs = sorted([
+            (code, data) for code, data in api_stream_data["subtitles"].items()
+            if code not in processed_languages
+        ])
+
+        for lang_code, sub_data in other_langs:
+            subtitles_data_raw.append(sub_data)
+            processed_languages.add(lang_code)
 
         if not subtitles_data_raw:
             return None
@@ -413,10 +435,10 @@ class VideoStream(Object):
                 subtitle_data.get('format', "")
             )
 
-            if cache_result is not None:
+            if cache_result:
                 subtitles_url_cached.append(cache_result)
 
-        return subtitles_url_cached if subtitles_url_cached is not None else None
+        return subtitles_url_cached if subtitles_url_cached else None
 
     def _cache_subtitle(self, subtitle_url: str, subtitle_language: str, subtitle_format: str) -> bool:
         """ cache a subtitle from the given url and rename it for kodi to label it correctly """
@@ -429,21 +451,41 @@ class VideoStream(Object):
             )
         except Exception:
             log_error_with_trace("error in requesting subtitle data from api")
-            raise CrunchyrollError(
-                "Failed to download subtitle for language %s from url %s" % (subtitle_language, subtitle_url)
-            )
+            return False
 
-        if not subtitles_req.get('data', None):
-            # error
-            raise CrunchyrollError("Returned data is not text")
+        if not subtitles_req or not subtitles_req.get('data', None):
+            crunchy_log(
+                "Failed to download subtitle for language %s from url %s" % (subtitle_language, subtitle_url),
+                xbmc.LOGERROR
+            )
+            return False
 
         cache_target = xbmcvfs.translatePath(self.get_cache_path() + G.args.get_arg('stream_id') + '/')
         xbmcvfs.mkdirs(cache_target)
 
         cache_file = self.get_cache_file_name(subtitle_language, subtitle_format)
 
+        data = subtitles_req.get('data')
+
+        if data:
+            # QoL: Convert soft line breaks (\n) to hard line breaks (\N) for better rendering in Kodi
+            # and remove any trailing line breaks that cause empty lines
+            data = data.replace('\\n', '\\N').replace('\\N\r\n', '\r\n').replace('\\N\n', '\n')
+
+            # Apply gap filler if enabled and format is ASS/SSA
+            if (G.args.addon.getSetting("subtitle_gap_filler") == "true" and
+                subtitle_format.lower() in ['ass', 'ssa']):
+                try:
+                    gap_filler = ASSGapFiller()
+                    data, gaps_filled = gap_filler.fill_flicker_gaps(data)
+                    if gaps_filled > 0:
+                        crunchy_log(f"Filled {gaps_filled} subtitle gaps for {subtitle_language}")
+                except Exception as e:
+                    # Log error but continue with original data if gap filling fails
+                    crunchy_log(f"Error filling subtitle gaps for {subtitle_language}: {str(e)}", xbmc.LOGERROR)
+
         with open(cache_target + cache_file, 'w', encoding='utf-8') as file:
-            result = file.write(subtitles_req.get('data'))
+            result = file.write(data)
 
         return True if result > 0 else False
 

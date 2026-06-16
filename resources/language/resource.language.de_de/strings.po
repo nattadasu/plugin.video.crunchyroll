@@ -439,3 +439,12 @@ msgctxt "#30313"
 msgid "- OR SCAN QR CODE -"
 msgstr "- ODER QR-CODE SCANNEN -"
 
+
+msgctxt "#30314"
+msgid "Fill subtitle gaps"
+msgstr "Untertitel-Lücken füllen"
+
+msgctxt "#30315"
+msgid "Fills distracting gaps between subtitle lines (0-6 frames) to improve readability"
+msgstr "Füllt störende Lücken zwischen Untertiteln (0-6 Frames), um die Lesbarkeit zu verbessern"
+
