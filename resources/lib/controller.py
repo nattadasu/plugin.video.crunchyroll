@@ -588,86 +588,38 @@ def add_to_queue() -> bool:
     return True
 
 
-def mark_as_watched() -> bool:
-    if not G.args.get_arg('content_id'):
-        return False
-
-    try:
-        req = G.api.make_scraper_request(
-            method="POST",
-            url=G.api.MARK_AS_WATCHED_ENDPOINT.format(G.api.account_data.account_id, G.args.get_arg('content_id')),
-            auth_type="device",
-            params={
-                "locale": G.args.subtitle,
-                "preferred_audio_language": G.api.account_data.default_audio_language
-            },
-            headers={
-                'Content-Type': 'application/json'
-            },
-            json_data={}
-        )
-
-        if req and "error" in req:
-            raise CrunchyrollError(req.get("error", "Unknown error"))
-
-    except Exception as e:
-        utils.log_error_with_trace(f"Failed to mark as watched: {e}")
-        xbmcgui.Dialog().notification(
-            G.args.addon_name,
-            'Failed to mark as watched',
-            xbmcgui.NOTIFICATION_ERROR,
-            3
-        )
-        return False
-
-    xbmcgui.Dialog().notification(
-        G.args.addon_name,
-        'Marked as watched',
-        xbmcgui.NOTIFICATION_INFO,
-        2,
-        False
-    )
-    xbmc.executebuiltin("Container.Refresh")
-    return True
-
-
-def mark_as_unwatched() -> bool:
-    if not G.args.get_arg('content_id'):
-        return False
-
-    try:
-        req = G.api.make_scraper_request(
-            method="DELETE",
-            url=G.api.MARK_AS_UNWATCHED_ENDPOINT.format(G.api.account_data.account_id, G.args.get_arg('content_id')),
-            auth_type="device",
-            params={
-                "locale": G.args.subtitle,
-                "preferred_audio_language": G.api.account_data.default_audio_language
-            }
-        )
-
-        if req and "error" in req:
-            raise CrunchyrollError(req.get("error", "Unknown error"))
-
-    except Exception as e:
-        utils.log_error_with_trace(f"Failed to mark as unwatched: {e}")
-        xbmcgui.Dialog().notification(
-            G.args.addon_name,
-            'Failed to mark as unwatched',
-            xbmcgui.NOTIFICATION_ERROR,
-            3
-        )
-        return False
-
-    xbmcgui.Dialog().notification(
-        G.args.addon_name,
-        'Marked as unwatched',
-        xbmcgui.NOTIFICATION_INFO,
-        2,
-        False
-    )
-    xbmc.executebuiltin("Container.Refresh")
-    return True
+# NOTE: be super careful when moving the content_id to json or params. it might delete the whole playlist! *sadpanda*
+# def remove_from_queue():
+#     # we absolutely need a content_id, otherwise it will delete the whole playlist!
+#     if not G.args.content_id:
+#         return False
+#
+#     # api request
+#     req = G.api.make_request(
+#         method="DELETE",
+#         url=G.api.WATCHLIST_REMOVE_ENDPOINT.format(G.api.account_data.account_id, G.args.content_id, G.args.content_id),
+#     )
+#
+#     # check for error - probably does not work
+#     if req and "error" in req:
+#         view.add_item({"title": G.args.addon.getLocalizedString(30061)})
+#         view.end_of_directory()
+#         xbmcgui.Dialog().notification(
+#             '%s Error' % G.args.addon_name,
+#             'Failed to remove item from watchlist',
+#             xbmcgui.NOTIFICATION_ERROR,
+#             3
+#         )
+#         return False
+#
+#     xbmcgui.Dialog().notification(
+#         '%s Success' % G.args.addon_name,
+#         'Item removed from watchlist',
+#         xbmcgui.NOTIFICATION_INFO,
+#         2
+#     )
+#
+#     return True
 
 
 def crunchylists_lists():
