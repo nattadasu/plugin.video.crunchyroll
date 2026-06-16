@@ -77,6 +77,8 @@ class API:
     WATCHLIST_V2_ENDPOINT = "https://www.crunchyroll.com/content/v2/{}/watchlist"
     PLAYHEADS_ENDPOINT = "https://www.crunchyroll.com/content/v2/{}/playheads"
     HISTORY_ENDPOINT = "https://beta-api.crunchyroll.com/content/v2/{}/watch-history"
+    MARK_AS_WATCHED_ENDPOINT = "https://www.crunchyroll.com/content/v2/discover/{}/mark_as_watched/{}"
+    MARK_AS_UNWATCHED_ENDPOINT = "https://www.crunchyroll.com/content/v2/{}/watch-history/{}"
     RESUME_ENDPOINT = "https://beta-api.crunchyroll.com/content/v2/discover/{}/history"
     SEASONAL_TAGS_ENDPOINT = "https://beta-api.crunchyroll.com/content/v2/discover/seasonal_tags"
     CATEGORIES_ENDPOINT = "https://beta-api.crunchyroll.com/content/v1/tenant_categories"

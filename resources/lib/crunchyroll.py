@@ -178,8 +178,10 @@ def check_mode():
         controller.start_playback()
     elif mode == "add_to_queue":
         controller.add_to_queue()
-    # elif mode == "remove_from_queue":
-    #     controller.remove_from_queue()
+    elif mode == "mark_as_watched":
+        controller.mark_as_watched()
+    elif mode == "mark_as_unwatched":
+        controller.mark_as_unwatched()
     elif mode == "crunchylists_lists":
         controller.crunchylists_lists()
     elif mode == 'crunchylists_item':

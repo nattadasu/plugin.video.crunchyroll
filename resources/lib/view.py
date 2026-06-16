@@ -330,6 +330,18 @@ def add_listables(
                      ))
             cm.append((G.args.addon.getLocalizedString(30046), "Container.Update(%s)" % route))
 
+        if isinstance(listable, PlayableItem):
+            if hasattr(listable, 'playcount') and listable.playcount == 1:
+                cm.append((
+                    "Mark as unwatched on Crunchyroll",
+                    'RunPlugin(%s?mode=mark_as_unwatched&content_id=%s)' % (G.args.argv[0], listable.id)
+                ))
+            else:
+                cm.append((
+                    "Mark as watched on Crunchyroll",
+                    'RunPlugin(%s?mode=mark_as_watched&content_id=%s)' % (G.args.argv[0], listable.id)
+                ))
+
         if options & OPT_NO_SEASON_TITLE and isinstance(listable, EpisodeData):
             list_item.setInfo('video',
                               {
@@ -406,10 +418,10 @@ def make_info_label(info) -> dict:
 
     # only allow to overwrite the local playcount if we sync the playtime with the server
     if G.args.addon.getSetting("sync_playtime") == "true":
-        if "playcount" in info_items:
-            info_labels["playcount"] = info_items["playcount"]
-        if "playcount" in arg_items and "playcount" not in info_labels:
-            info_labels["playcount"] = arg_items["playcount"]
+        if "playcount" in info:
+            info_labels["playcount"] = info["playcount"]
+        if "playcount" in G.args.args and "playcount" not in info_labels:
+            info_labels["playcount"] = G.args.args["playcount"]
 
 
     return info_labels
