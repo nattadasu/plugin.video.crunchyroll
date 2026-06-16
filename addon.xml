@@ -10,7 +10,7 @@
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
-        <language>en es pt fr de ar it ru</language>
+        <language>en es pt fr de ar it ru id</language>
         <summary lang="en_GB">Watch videos from Crunchyroll.com!</summary>
         <summary lang="de_DE">Schaue Videos von Crunchyroll.com!</summary>
         <summary lang="es_ES">¡Visualiza vídeos a través de Crunchyroll.com!</summary>

@@ -1,0 +1,444 @@
+# Kodi Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@kodi.org\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: id\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+# Crunchyroll Settings
+msgctxt "#30200"
+msgid "Login"
+msgstr "Masuk"
+
+msgctxt "#30210"
+msgid "Languages"
+msgstr "Bahasa"
+
+msgctxt "#30220"
+msgid "Playback"
+msgstr "Pemutaran"
+
+msgctxt "#30230"
+msgid "Other"
+msgstr "Lainnya"
+
+
+msgctxt "#30003"
+msgid "Synchronize play time progress"
+msgstr "Sinkronkan kemajuan waktu putar"
+
+msgctxt "#30004"
+msgid "Configure InputStream Adaptive"
+msgstr "Konfigurasi InputStream Adaptive"
+
+msgctxt "#30005"
+msgid "Soft Subtitles"
+msgstr "Takarir Lunak (Soft Subtitle)"
+
+msgctxt "#30010"
+msgid "General"
+msgstr "Umum"
+
+msgctxt "#30011"
+msgid "Skip intro"
+msgstr "Lewati intro"
+
+msgctxt "#30012"
+msgid "Skip credits"
+msgstr "Lewati kredit"
+
+msgctxt "#30013"
+msgid "Ask before skipping"
+msgstr "Tanya sebelum melewati"
+
+msgctxt "#30015"
+msgid "Skip"
+msgstr "Lewati"
+
+msgctxt "#30020"
+msgid "Subtitle Language"
+msgstr "Bahasa Takarir"
+
+msgctxt "#30021"
+msgid "English"
+msgstr "Bahasa Inggris"
+
+msgctxt "#30022"
+msgid "Vietnamese"
+msgstr "Bahasa Vietnam"
+
+msgctxt "#30023"
+msgid "Spanish"
+msgstr "Bahasa Spanyol"
+
+msgctxt "#30024"
+msgid "Spanish (Spain)"
+msgstr "Bahasa Spanyol (Spanyol)"
+
+msgctxt "#30025"
+msgid "Portuguese (Brazil)"
+msgstr "Bahasa Portugis (Brasil)"
+
+msgctxt "#30026"
+msgid "Portuguese (Portugal)"
+msgstr "Bahasa Portugis (Portugal)"
+
+msgctxt "#30027"
+msgid "French (France)"
+msgstr "Bahasa Prancis (Prancis)"
+
+msgctxt "#30028"
+msgid "German"
+msgstr "Bahasa Jerman"
+
+msgctxt "#30029"
+msgid "Arabic"
+msgstr "Bahasa Arab"
+
+msgctxt "#30030"
+msgid "Italian"
+msgstr "Bahasa Italia"
+
+msgctxt "#30031"
+msgid "Russian"
+msgstr "Bahasa Rusia"
+
+msgctxt "#30032"
+msgid "Hindi"
+msgstr "Bahasa Hindi"
+
+msgctxt "#30033"
+msgid "Indonesian"
+msgstr "Bahasa Indonesia"
+
+msgctxt "#30034"
+msgid "Malay"
+msgstr "Bahasa Melayu"
+
+msgctxt "#30035"
+msgid "Chinese (Simplified)"
+msgstr "Bahasa Tionghoa (Sederhana)"
+
+msgctxt "#30036"
+msgid "Chinese (Traditional)"
+msgstr "Bahasa Tionghoa (Tradisional)"
+
+msgctxt "#30037"
+msgid "Thai"
+msgstr "Bahasa Tailan"
+
+
+msgctxt "#30038"
+msgid "Filter available dubs"
+msgstr "Saring dubbing yang tersedia"
+
+msgctxt "#30039"
+msgid "In an anime seasons or series view, only display dubs in either Japanese, your CR language or any of your configured subtitle languages."
+msgstr "Dalam tampilan musim anime atau seri, hanya tampilkan dubbing dalam bahasa Jepang, bahasa pilihan Anda di Crunchyroll, atau bahasa takarir terkonfigurasi lainnya."
+
+msgctxt "#30138"
+msgid "Show dubs in your language"
+msgstr "Tampilkan dubbing dalam bahasa Anda"
+
+msgctxt "#30139"
+msgid "In an anime seasons or series view, display dubs in your CR language"
+msgstr "Dalam tampilan musim anime atau seri, tampilkan dubbing dalam bahasa CR Anda"
+
+
+msgctxt "#30140"
+msgid "Show dubs in your alternative language"
+msgstr "Tampilkan dubbing dalam bahasa alternatif Anda"
+
+msgctxt "#30141"
+msgid "In an anime seasons or series view, display dubs in your configured alternative subtitle language."
+msgstr "Dalam tampilan musim anime atau seri, tampilkan dubbing dalam bahasa takarir alternatif terkonfigurasi Anda."
+
+msgctxt "#30142"
+msgid "Show subtitled entries"
+msgstr "Tampilkan entri dengan takarir"
+
+msgctxt "#30143"
+msgid "In an anime seasons or series view, display dubs in Japanese with subtitles in your configured subtitle languages."
+msgstr "Dalam tampilan musim anime atau seri, tampilkan dubbing bahasa Jepang dengan takarir dalam bahasa takarir terkonfigurasi Anda."
+
+
+# Crunchyroll Menue
+
+msgctxt "#30040"
+msgid "Queue"
+msgstr "Antrean"
+
+msgctxt "#30041"
+msgid "Search"
+msgstr "Cari"
+
+msgctxt "#30042"
+msgid "History"
+msgstr "Riwayat"
+
+msgctxt "#30043"
+msgid "Random"
+msgstr "Acak"
+
+msgctxt "#30044"
+msgid "Next page"
+msgstr "Halaman berikutnya"
+
+msgctxt "#30045"
+msgid "Goto series"
+msgstr "Buka seri"
+
+msgctxt "#30046"
+msgid "Goto season"
+msgstr "Buka musim"
+
+msgctxt "#30047"
+msgid "Resume"
+msgstr "Lanjutkan"
+
+# 30048 free
+
+msgctxt "#30049"
+msgid "Crunchylists"
+msgstr "Crunchylists"
+
+msgctxt "#30050"
+msgid "Anime"
+msgstr "Anime"
+
+msgctxt "#30051"
+msgid "Drama"
+msgstr "Drama"
+
+msgctxt "#30052"
+msgid "Popular"
+msgstr "Populer"
+
+msgctxt "#30053"
+msgid "Simulcasts"
+msgstr "Simulcast"
+
+msgctxt "#30054"
+msgid "Updated"
+msgstr "Diperbarui"
+
+msgctxt "#30055"
+msgid "Alphabetical"
+msgstr "Urutan Abjad"
+
+msgctxt "#30056"
+msgid "Genres"
+msgstr "Genre"
+
+msgctxt "#30057"
+msgid "Seasons"
+msgstr "Musim"
+
+msgctxt "#30058"
+msgid "Featured"
+msgstr "Unggulan"
+
+msgctxt "#30059"
+msgid "Newest"
+msgstr "Terbaru"
+
+
+# Crunchyroll Messages
+
+msgctxt "#30060"
+msgid "Login failed"
+msgstr "Login gagal"
+
+msgctxt "#30061"
+msgid "An error occurred"
+msgstr "Terjadi kesalahan"
+
+msgctxt "#30062"
+msgid "You need to be logged in"
+msgstr "Anda harus masuk terlebih dahulu"
+
+msgctxt "#30063"
+msgid "You need to be a premium member"
+msgstr "Anda harus menjadi anggota premium"
+
+msgctxt "#30064"
+msgid "Failed to play video"
+msgstr "Gagal memutar video"
+
+msgctxt "#30065"
+msgid "Do you want to continue watching at %s%%?"
+msgstr "Apakah Anda ingin melanjutkan menonton di %s%%?"
+
+msgctxt "#30066"
+msgid "If the video does not start wait 30 seconds for the fallback to start."
+msgstr "Jika video tidak mulai, tunggu 30 detik untuk memulai cadangan."
+
+msgctxt "#30067"
+msgid "Add to queue"
+msgstr "Tambah ke antrean"
+
+msgctxt "#30068"
+msgid "Remove from queue"
+msgstr "Hapus dari antrean"
+
+msgctxt "#30069"
+msgid "Alternative Subtitle Language"
+msgstr "Bahasa Takarir Alternatif"
+
+msgctxt "#30070"
+msgid "None"
+msgstr "Tidak ada"
+
+msgctxt "#30071"
+msgid "Added to queue"
+msgstr "Ditambahkan ke antrean"
+
+msgctxt "#30072"
+msgid "[COLOR orange]%s[/COLOR] (change profile)"
+msgstr "[COLOR orange]%s[/COLOR] (ubah profil)"
+
+msgctxt "#30073"
+msgid "Choose your profile"
+msgstr "Pilih profil Anda"
+
+msgctxt "#30080"
+msgid "There are too many active streams. Please try again later."
+msgstr "Terlalu banyak pemutaran aktif. Silakan coba lagi nanti."
+
+msgctxt "#30090"
+msgid "No search results"
+msgstr "Tidak ada hasil pencarian"
+
+# Developer Options
+
+msgctxt "#30101"
+msgid "Debug Logging"
+msgstr "Pencatatan Debug"
+
+msgctxt "#30102"
+msgid "Enable detailed logging for troubleshooting. Only enable when requested by support."
+msgstr "Aktifkan pencatatan detail untuk pemecahan masalah. Hanya aktifkan jika diminta oleh tim dukungan."
+
+msgctxt "#30240"
+msgid "Developer Options"
+msgstr "Opsi Pengembang"
+
+msgctxt "#30241"
+msgid "Device ID"
+msgstr "ID Perangkat"
+
+msgctxt "#30242"
+msgid "Reset Authentication"
+msgstr "Atur Ulang Autentikasi"
+
+msgctxt "#30243"
+msgid "Deletes all stored session data. You will need to authenticate again."
+msgstr "Menghapus semua data sesi yang tersimpan. Anda harus melakukan autentikasi ulang."
+
+msgctxt "#30244"
+msgid "Session data deleted successfully. Please restart the addon to authenticate again."
+msgstr "Data sesi berhasil dihapus. Silakan restart addon untuk melakukan autentikasi ulang."
+
+# Device Authentication Dialog
+
+msgctxt "#30300"
+msgid "Visit: %s"
+msgstr "Kunjungi: %s"
+
+msgctxt "#30301"
+msgid "Waiting for activation..."
+msgstr "Menunggu aktivasi..."
+
+msgctxt "#30302"
+msgid "Time remaining: %02d:%02d"
+msgstr "Waktu tersisa: %02d:%02d"
+
+msgctxt "#30303"
+msgid "New code generated - please visit the URL again"
+msgstr "Kode baru dibuat - silakan kunjungi URL kembali"
+
+msgctxt "#30304"
+msgid "Authentication successful!"
+msgstr "Autentikasi berhasil!"
+
+msgctxt "#30305"
+msgid "! Code expired - click Refresh for new code"
+msgstr "! Kode kedaluwarsa - klik Segarkan untuk kode baru"
+
+msgctxt "#30306"
+msgid "x Error: %s"
+msgstr "x Kesalahan: %s"
+
+msgctxt "#30307"
+msgid "Failed to generate new code"
+msgstr "Gagal membuat kode baru"
+
+msgctxt "#30308"
+msgid "Failed to refresh code"
+msgstr "Gagal menyegarkan kode"
+
+# User-friendly Error Messages
+
+msgctxt "#30400"
+msgid "Unable to connect to Crunchyroll. Please check your internet connection and try again."
+msgstr "Tidak dapat terhubung ke Crunchyroll. Silakan periksa koneksi internet Anda dan coba lagi."
+
+msgctxt "#30401"
+msgid "Your login session has expired. Please authenticate again."
+msgstr "Sesi login Anda telah kedaluwarsa. Silakan lakukan autentikasi ulang."
+
+msgctxt "#30402"
+msgid "Crunchyroll servers are currently unavailable. Please try again later."
+msgstr "Server Crunchyroll saat ini tidak tersedia. Silakan coba lagi nanti."
+
+msgctxt "#30403"
+msgid "Device authentication was cancelled. Please try again if you want to continue."
+msgstr "Autentikasi perangkat dibatalkan. Silakan coba lagi jika Anda ingin melanjutkan."
+
+msgctxt "#30404"
+msgid "Device code has expired. Please start authentication again."
+msgstr "Kode perangkat telah kedaluwarsa. Silakan mulai autentikasi kembali."
+
+msgctxt "#30405"
+msgid "Authentication failed. Please restart the addon and try again."
+msgstr "Autentikasi gagal. Silakan restart addon dan coba lagi."
+
+# Device Activation Dialog UI
+
+msgctxt "#30309"
+msgid "Crunchyroll Device Activation"
+msgstr "Aktivasi Perangkat Crunchyroll"
+
+msgctxt "#30310"
+msgid "Enter the activation code shown below:"
+msgstr "Masukkan kode aktivasi yang ditunjukkan di bawah ini:"
+
+msgctxt "#30311"
+msgid "Refresh Code"
+msgstr "Segarkan Kode"
+
+msgctxt "#30312"
+msgid "Cancel"
+msgstr "Batal"
+
+msgctxt "#30313"
+msgid "- OR SCAN QR CODE -"
+msgstr "- ATAU PINDAI KODE QR -"
+
+
+msgctxt "#30314"
+msgid "Fill subtitle gaps"
+msgstr "Isi celah takarir"
+
+msgctxt "#30315"
+msgid "Fills distracting gaps between subtitle lines (0-6 frames) to improve readability"
+msgstr "Isi jeda kosong yang mengganggu di antara baris takarir (0-6 frame) untuk meningkatkan kenyamanan membaca"
