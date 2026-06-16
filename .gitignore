@@ -10,3 +10,5 @@ api-new/
 /tests/.env
 /tests/fixtures/captured_responses.json
 /.coverage
+build/
+dist/
