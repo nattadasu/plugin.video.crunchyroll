@@ -28,194 +28,6 @@ import xbmcgui
 import xbmcplugin
 import xbmcvfs
 
-<<<<<<< HEAD
-from resources.lib.globals import G
-from resources.lib.model import Object, CrunchyrollError, PlayableItem
-from resources.lib.utils import log_error_with_trace, crunchy_log, \
-    get_playheads_from_api, get_cms_object_data_by_ids, get_listables_from_response
-from resources.lib.gap_filler import ASSGapFiller
-from ..modules import cloudscraper
-
-class CloudflareProxy:
-    """
-    Minimal HTTP proxy to bypass Cloudflare for Kodi manifest access
-
-    Auto-terminates after TTL to prevent zombie processes
-    """
-
-    def __init__(self, ttl_seconds=30):
-        self.server = None
-        self.server_thread = None
-        self.port = None
-        self.ttl_seconds = ttl_seconds
-        self.start_time = None
-        self.shutdown_timer = None
-
-    def get_proxied_url(self, original_url: str) -> str:
-        """Get proxied URL for Cloudflare-protected manifest"""
-        try:
-            if not self.server:
-                self._start_server()
-
-            # Verify server is still running
-            if self.server_thread and not self.server_thread.is_alive():
-                crunchy_log("Proxy server thread died, restarting", xbmc.LOGDEBUG)
-                self.restart()
-
-            # Encode original URL as parameter
-            encoded_url = urllib.parse.quote(original_url, safe='')
-            return f"http://127.0.0.1:{self.port}/proxy?url={encoded_url}"
-
-        except Exception as e:
-            crunchy_log(f"Error in get_proxied_url: {e}")
-            # Try to restart proxy and return original URL as fallback
-            try:
-                self.restart()
-                encoded_url = urllib.parse.quote(original_url, safe='')
-                return f"http://127.0.0.1:{self.port}/proxy?url={encoded_url}"
-            except Exception as restart_error:
-                crunchy_log(f"Proxy restart failed: {restart_error}")
-                return original_url  # Fallback to original URL
-
-    def _start_server(self):
-        """Start minimal HTTP server for manifest proxying with auto-shutdown"""
-        try:
-            class ProxyHandler(http.server.BaseHTTPRequestHandler):
-                def do_GET(self):
-                    if self.path.startswith('/proxy?url='):
-                        # Extract original URL
-                        url_param = self.path.split('url=', 1)[1]
-                        original_url = urllib.parse.unquote(url_param)
-
-                        crunchy_log(f"Proxy request for: {original_url}")
-
-                        try:
-                            # Use CloudScraper to fetch manifest
-                            scraper = cloudscraper.create_scraper(
-                                delay=10,
-                                browser={'custom': G.api.CRUNCHYROLL_UA_DEVICE}
-                            )
-
-                            headers = {
-                                "Authorization": f"{G.api.account_data.token_type} {G.api.account_data.access_token}",
-                                "User-Agent": G.api.CRUNCHYROLL_UA_DEVICE,
-                            }
-
-                            response = scraper.get(original_url, headers=headers, timeout=30)
-
-                            if response.ok:
-                                # Forward response to Kodi
-                                self.send_response(200)
-                                self.send_header('Content-Type', response.headers.get('Content-Type', 'application/dash+xml'))
-                                self.send_header('Content-Length', str(len(response.content)))
-                                self.end_headers()
-                                self.wfile.write(response.content)
-                                crunchy_log(f"Proxy served: {len(response.content)} bytes", xbmc.LOGDEBUG)
-                            else:
-                                self.send_error(response.status_code, f"Upstream error: {response.status_code}")
-
-                        except Exception as e:
-                            crunchy_log(f"Proxy error: {e}")
-                            self.send_error(500, f"Proxy error: {str(e)}")
-                    else:
-                        self.send_error(404, "Not found")
-
-                def log_message(self, format, *args):
-                    # Suppress default HTTP server logging
-                    pass
-
-            # Start server on random port
-            self.server = socketserver.TCPServer(("127.0.0.1", 0), ProxyHandler)
-            self.port = self.server.server_address[1]
-
-            # Start in background thread
-            self.server_thread = threading.Thread(target=self.server.serve_forever, daemon=True)
-            self.server_thread.start()
-
-            # Set start time and schedule auto-shutdown
-            self.start_time = time.time()
-            self._schedule_auto_shutdown()
-
-            crunchy_log(f"CloudFlare proxy started on port {self.port} (TTL: {self.ttl_seconds}s)")
-
-        except Exception as e:
-            crunchy_log(f"Failed to start CloudFlare proxy: {e}")
-            raise
-
-    def stop(self):
-        """Stop proxy server"""
-        # Cancel auto-shutdown timer
-        if self.shutdown_timer:
-            self.shutdown_timer.cancel()
-            self.shutdown_timer = None
-
-        if self.server:
-            self.server.shutdown()
-            self.server.server_close()
-            self.server = None
-            self.server_thread = None
-            self.port = None
-            self.start_time = None
-            crunchy_log("CloudFlare proxy stopped")
-
-    def restart(self):
-        """Restart proxy server if it fails"""
-        crunchy_log("Restarting CloudFlare proxy")
-        self.stop()
-        self._start_server()
-
-    def _schedule_auto_shutdown(self):
-        """Schedule automatic shutdown after TTL"""
-        def auto_shutdown():
-            if self.server:  # Check if still running
-                crunchy_log(f"CloudFlare proxy auto-shutdown after {self.ttl_seconds}s TTL")
-                self.stop()
-
-        self.shutdown_timer = threading.Timer(self.ttl_seconds, auto_shutdown)
-        self.shutdown_timer.daemon = True
-        self.shutdown_timer.start()
-
-    def extend_ttl(self, additional_seconds=30):
-        """Extend proxy TTL if needed (for longer operations)"""
-        if self.server and self.start_time:
-            # Cancel current timer
-            if self.shutdown_timer:
-                self.shutdown_timer.cancel()
-
-            # Calculate new TTL
-            elapsed = time.time() - self.start_time
-            new_ttl = elapsed + additional_seconds
-
-            crunchy_log(f"Extending proxy TTL by {additional_seconds}s", xbmc.LOGDEBUG)
-            self.shutdown_timer = threading.Timer(additional_seconds, lambda: self.stop())
-            self.shutdown_timer.daemon = True
-            self.shutdown_timer.start()
-
-
-# Global proxy instance (lazy loaded)
-_cloudflare_proxy = None
-
-
-def get_cloudflare_proxy() -> CloudflareProxy:
-    """Get global CloudFlare proxy instance"""
-    global _cloudflare_proxy
-    if not _cloudflare_proxy:
-        _cloudflare_proxy = CloudflareProxy()
-    return _cloudflare_proxy
-
-
-def cleanup_cloudflare_proxy():
-    """Cleanup global CloudFlare proxy instance"""
-    global _cloudflare_proxy
-    if _cloudflare_proxy:
-        try:
-            _cloudflare_proxy.stop()
-            crunchy_log("CloudFlare proxy cleaned up", xbmc.LOGDEBUG)
-        except Exception as e:
-            crunchy_log(f"Error during proxy cleanup: {e}", xbmc.LOGDEBUG)
-        finally:
-            _cloudflare_proxy = None
-=======
 from resources.lib.context import PluginContext
 from resources.lib.models.base import Object, PlayableItem
 from resources.lib.models.exceptions import CrunchyrollError
@@ -226,7 +38,7 @@ from resources.lib.utils.api_data import (
     get_playheads_from_api,
 )
 from resources.lib.utils.logging import crunchy_log, log_error_with_trace
->>>>>>> upstream/nexus-staging
+from resources.lib.gap_filler import ASSGapFiller
 
 
 class VideoPlayerStreamData(Object):
@@ -283,19 +95,13 @@ class VideoStream(Object):
         if not api_stream_data:
             raise CrunchyrollError("Failed to fetch stream data from api")
 
-<<<<<<< HEAD
-        video_player_stream_data.stream_url = self._get_stream_url_from_api_data_v2(async_data.get('stream_data'))
-        video_player_stream_data.subtitle_urls = async_data.get('subtitle_urls')
-        video_player_stream_data.token = async_data.get('stream_data').get('token')
-=======
         video_player_stream_data.stream_url = self._get_stream_url_from_api_data_v2(
             async_data.get("stream_data"),
             api=self._ctx.api,
             args=self._ctx.args,
         )
-        video_player_stream_data.subtitle_urls = self._get_subtitles_from_api_data(async_data.get("stream_data"))
+        video_player_stream_data.subtitle_urls = async_data.get("subtitle_urls")
         video_player_stream_data.token = async_data.get("stream_data").get("token")
->>>>>>> upstream/nexus-staging
 
         video_player_stream_data.skip_events_data = async_data.get("skip_events_data")
         video_player_stream_data.playheads_data = async_data.get("playheads_data")
@@ -351,21 +157,12 @@ class VideoStream(Object):
         subtitle_urls = await asyncio.to_thread(self._get_subtitles_from_api_data, stream_data)
 
         return {
-<<<<<<< HEAD
-            'stream_data': stream_data,
-            'skip_events_data': results[1] or {},
-            'playheads_data': results[2] or {},
-            'playable_item': playable_item[0] if playable_item else None,
-            'playable_item_parent': None,
-            'subtitle_urls': subtitle_urls
-=======
-            "stream_data": results[0] or {},
+            "stream_data": stream_data,
             "skip_events_data": results[1] or {},
             "playheads_data": results[2] or {},
             "playable_item": playable_item[0] if playable_item else None,
             "playable_item_parent": None,
-            # get_listables_from_response([results[4]])[0] if results[4] else None
->>>>>>> upstream/nexus-staging
+            "subtitle_urls": subtitle_urls
         }
 
     async def _get_stream_data_from_api(self) -> dict | bool:
