@@ -8,5 +8,8 @@ api-new/
 /tests/.env
 /tests/fixtures/captured_responses*
 /.coverage
+/tests/fixtures/probe_responses.json
 build/
 dist/
+/dev/kodi-boxes/.env
+/dev/kodi-boxes/data/
